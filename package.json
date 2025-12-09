@@ -1,0 +1,12 @@
+{
+  "name": "bun-argo-x",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun index.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}
