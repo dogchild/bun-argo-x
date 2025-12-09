@@ -1,12 +1,10 @@
 <div align="center">
 
-# nodejs-argo-x隧道代理
+# bun-argo-x 隧道代理
 
-[![npm version](https://img.shields.io/npm/v/nodejs-argo-x.svg)](https://www.npmjs.com/package/nodejs-argo-x)
-[![npm downloads](https://img.shields.io/npm/dm/nodejs-argo-x.svg)](https://www.npmjs.com/package/nodejs-argo-x)
-[![License](https://img.shields.io/npm/l/nodejs-argo-x.svg)](https://github.com/eooce/nodejs-argo-x/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-nodejs-argo-x是一个强大的Argo隧道部署工具，专为PaaS平台和游戏玩具平台设计。它支持VLESS代理协议。
+bun-argo-x 是一个基于 Bun 的强大 Argo 隧道部署工具，专为 PaaS 平台和游戏玩具平台设计。它支持 VLESS 代理协议。
 
 ---
 
@@ -14,9 +12,9 @@ nodejs-argo-x是一个强大的Argo隧道部署工具，专为PaaS平台和游�
 
 ## 说明 （部署前请仔细阅读）
 
-* 本项目是针对node环境的paas平台和游戏玩具而生，采用Argo隧道部署节点。
-* node玩具平台只需上传index.js和package.json即可，paas平台需要docker部署的才上传Dockerfile。
-* 不填写A_DOMAIN和A_AUTH两个变量即启用临时隧道，反之则使用固定隧道。
+* 本项目是针对 Bun 环境的 PaaS 平台设计，采用 Argo 隧道部署节点。
+* 只需要 `index.js` 和 `package.json` 即可运行。
+* 不填写 `A_DOMAIN` 和 `A_AUTH` 两个变量即启用临时隧道，反之则使用固定隧道。
 
 ## 📋 环境变量
 
@@ -44,116 +42,77 @@ nodejs-argo-x是一个强大的Argo隧道部署工具，专为PaaS平台和游�
 
 ---
 
-## 🚀 进阶使用
+## 🚀 使用方法
 
-### 安装
+### 环境要求
 
-```bash
-# 全局安装（推荐）
-npm install -g nodejs-argo-x
+需要安装 [Bun](https://bun.sh/) 1.0 或更高版本。
 
-# 或者使用yarn
-yarn global add nodejs-argo-x
-
-# 或者使用pnpm
-pnpm add -g nodejs-argo-x
-```
-
-### 基本使用
+### 本地运行
 
 ```bash
-# 直接运行（使用默认配置）
-nodejs-argo-x
+# 安装依赖 (其实没有依赖，但这是标准流程)
+bun install
 
-# 使用npx运行
-npx nodejs-argo-x
+# 启动服务
+bun start
 
-# 设置环境变量运行
-PORT=3005 npx nodejs-argo-x
+# 或者直接运行文件
+bun index.js
 ```
 
 ### 环境变量配置
 
-可使用 `.env` 文件来配置环境变量运行
-
+可使用 `.env` 文件来配置环境变量运行，Bun 会自动读取 `.env` 文件。
 
 或者直接在命令行中设置：
 
 ```bash
 export PORT=3005
 export UID="your-id-here"
+bun start
 ```
 
-## 📦 作为npm模块使用
+### Docker 运行
 
-```javascript
-// CommonJS
-const nodejsArgox = require('nodejs-argo-x');
+本项目包含针对 Bun 优化的 `Dockerfile`。
 
-// ES6 Modules
-import nodejsArgox from 'nodejs-argo-x';
+```bash
+# 构建镜像
+docker build -t bun-argo-x .
 
-// 启动服务
-nodejsArgox.start();
+# 运行容器
+docker run -p 3005:3005 --name argo-app -d bun-argo-x
+
+# 运行容器 (带变量)
+docker run -p 3005:3005 --name argo-app -d \
+  -e UID="your-custom-id" \
+  -e A_DOMAIN="your.domain.com" \
+  -e A_AUTH="your-argo-token" \
+  bun-argo-x
 ```
 
 ## 🔧 后台运行
 
-### 使用screen（推荐）
+### 使用 nohup
 ```bash
-# 创建screen会话
-screen -S argo
-
-# 运行应用
-nodejs-argo-x
-
-# 按 Ctrl+A 然后按 D 分离会话
-# 重新连接：screen -r argo
+nohup bun index.js > run.log 2>&1 &
 ```
 
-### 使用tmux
-```bash
-# 创建tmux会话
-tmux new-session -d -s argo
-
-# 运行应用
-tmux send-keys -t argo "nodejs-argo-x" Enter
-
-# 分离会话：tmux detach -s argo
-# 重新连接：tmux attach -t argo
-```
-
-### 使用PM2
-```bash
-# 安装PM2
-npm install -g pm2
-
-# 启动应用
-pm2 start nodejs-argo-x --name "argo-service"
-
-# 管理应用
-pm2 status
-pm2 logs argo-service
-pm2 restart argo-service
-```
-
-### 使用systemd（Linux系统服务）
-```bash
-# 创建服务文件
-sudo nano /etc/systemd/system/nodejs-argo-x.service
-
-```
+### 使用 systemd（Linux系统服务）
+```ini
 [Unit]
-Description=Node.js Argo Service
+Description=Bun Argo Service
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/root/test
+WorkingDirectory=/root/bun-argo-x
+Environment=PATH=/root/.bun/bin:/usr/local/bin:/usr/bin:/bin
 Environment=A_PORT=8001
 Environment=PORT=3005
-ExecStart=/usr/bin/npx nodejs-argo-x
+ExecStart=/root/.bun/bin/bun index.js
 Restart=always
 RestartSec=10
 
@@ -161,27 +120,16 @@ RestartSec=10
 WantedBy=multi-user.target
 ```
 
-# 启动服务
-sudo systemctl start nodejs-argo-x
-sudo systemctl enable nodejs-argo-x
-```
-
-## 🔄 更新
-
 ```bash
-# 更新全局安装的包
-npm update -g nodejs-argo-x
-
-# 或者重新安装
-npm uninstall -g nodejs-argo-x
-npm install -g nodejs-argo-x
+# 启动服务
+sudo systemctl start bun-argo-x
+sudo systemctl enable bun-argo-x
 ```
 
 ## 📚 更多信息
 
-- [GitHub仓库](https://github.com/dogchild/nodejs-argo-x)
-- [npm包页面](https://www.npmjs.com/package/nodejs-argo-x)
-- [问题反馈](https://github.com/dogchild/nodejs-argo-x/issues)
+- [Bun 官网](https://bun.sh)
+- [问题反馈](https://github.com/dogchild/bun-argo-x/issues)
 
 ---
   
