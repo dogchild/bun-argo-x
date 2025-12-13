@@ -39,6 +39,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/bun-a-x:ob
+            ghcr.io/${{ github.repository_owner }}/bun-a-x:ob2
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.description=Bun.js project with A-X
