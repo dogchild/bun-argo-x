@@ -3,7 +3,7 @@ FROM oven/bun:alpine
 # 安装必要的系统依赖
 # tzdata: 用于时区设置
 # procps: 包含 pkill 命令 (代码中使用了 exec('pkill ...'))
-RUN apk add --no-cache tzdata procps
+RUN apk add --no-cache tzdata procps bash
 
 # 设置时区
 ENV TZ=Asia/Shanghai
