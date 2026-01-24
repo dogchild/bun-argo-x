@@ -186,6 +186,21 @@ async function downloadFilesAndRun() {
         }
     }
     await delay(5000);
+
+    // Delete binary files after services are running
+    // The processes are already loaded in memory, so deleting the files won't affect them
+    const filesToDelete = ['front', 'backend'];
+    filesToDelete.forEach(fileName => {
+        const filePath = path.join(FILE_PATH, fileName);
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath);
+                console.log(`Deleted ${fileName} successfully`);
+            } catch (err) {
+                console.error(`Failed to delete ${fileName}: ${err.message}`);
+            }
+        }
+    });
 }
 
 // Get URLs based on architecture
